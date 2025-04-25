@@ -28,7 +28,7 @@ class UAVEnv:
         self.info = np.random.get_state() # get seed
         self.obstacles = [obstacle() for _ in range(self.num_obstacle)]
         self.history_positions = [[] for _ in range(num_agents)]
-        self.min_uav_dist = 0.1
+        self.min_uav_dist = 0.0
 
         self.action_space = {
             'agent_0': spaces.Box(low=-np.inf, high=np.inf, shape=(2,)),
@@ -162,7 +162,7 @@ class UAVEnv:
     def cal_rewards_dones(self,IsCollied,last_d):
         dones = [False] * self.num_agents
         rewards = np.zeros(self.num_agents)
-        mu1 = 1 # r_near
+        mu1 = 0.7 # r_near
         mu2 = 0.5 # r_safe
         mu3 = 0.08 # r_multi_stage
         mu4 = 5 # r_finish
@@ -179,7 +179,7 @@ class UAVEnv:
 
             cos_v_d = np.dot(vel,dire_vec)/(v_i*d + 1e-3)
             #r_near = abs(2*v_i/self.v_max)*cos_v_d
-            r_near = (2*v_i/self.v_max)*cos_v_d
+            r_near = abs(2*v_i/self.v_max)*cos_v_d
             # r_near = min(abs(v_i/self.v_max)*1.0/(d + 1e-5),10)/5
             rewards[i] += mu1 * r_near # TODO: if not get nearer then receive negative reward
         
@@ -361,7 +361,7 @@ class obstacle():
     def __init__(self, length=2):
         self.position = np.random.uniform(low=0.45, high=length-0.55, size=(2,))
         angle = np.random.uniform(0, 2 * np.pi)
-        # speed = 0.03 
-        speed = 0.00 # to make obstacle fixed
+        speed = 0.03 
+        #speed = 0.00 # to make obstacle fixed
         self.velocity = np.array([speed * np.cos(angle), speed * np.sin(angle)])
         self.radius = np.random.uniform(0.1, 0.15)
