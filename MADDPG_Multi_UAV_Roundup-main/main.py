@@ -42,14 +42,14 @@ if __name__ == '__main__':
                         n_actions, n_agents, batch_size=256)
 
     PRINT_INTERVAL = 100
-    N_GAMES = 2000
+    N_GAMES = 5000
     #origin 5000
     MAX_STEPS = 100
     total_steps = 0
     score_history = []
     target_score_history = []
     evaluate = True
-    best_score = -30
+    best_score = -9999
 
     if evaluate:
         maddpg_agents.load_checkpoint()

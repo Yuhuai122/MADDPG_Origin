@@ -28,6 +28,7 @@ class UAVEnv:
         self.info = np.random.get_state() # get seed
         self.obstacles = [obstacle() for _ in range(self.num_obstacle)]
         self.history_positions = [[] for _ in range(num_agents)]
+        self.min_uav_dist = 0.1
 
         self.action_space = {
             'agent_0': spaces.Box(low=-np.inf, high=np.inf, shape=(2,)),
