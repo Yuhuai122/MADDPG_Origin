@@ -161,9 +161,9 @@ class UAVEnv:
     def cal_rewards_dones(self,IsCollied,last_d):
         dones = [False] * self.num_agents
         rewards = np.zeros(self.num_agents)
-        mu1 = 0.7 # r_near
-        mu2 = 0.4 # r_safe
-        mu3 = 0.01 # r_multi_stage
+        mu1 = 1 # r_near
+        mu2 = 0.5 # r_safe
+        mu3 = 0.08 # r_multi_stage
         mu4 = 5 # r_finish
         d_capture = 0.3
         d_limit = 0.75
@@ -177,7 +177,8 @@ class UAVEnv:
             d = np.linalg.norm(dire_vec) # distance to target
 
             cos_v_d = np.dot(vel,dire_vec)/(v_i*d + 1e-3)
-            r_near = abs(2*v_i/self.v_max)*cos_v_d
+            #r_near = abs(2*v_i/self.v_max)*cos_v_d
+            r_near = (2*v_i/self.v_max)*cos_v_d
             # r_near = min(abs(v_i/self.v_max)*1.0/(d + 1e-5),10)/5
             rewards[i] += mu1 * r_near # TODO: if not get nearer then receive negative reward
         
@@ -211,19 +212,19 @@ class UAVEnv:
         # 3.2 stage-1 track
         if Sum_S > S4 and Sum_d >= d_limit and all(d >= d_capture for d in [d1, d2, d3]):
             r_track = - Sum_d/max([d1,d2,d3])
-            rewards[0:2] += mu3*r_track
+            rewards[0:3] += mu3*r_track
         # 3.3 stage-2 encircle
         elif Sum_S > S4 and (Sum_d < d_limit or any(d >= d_capture for d in [d1, d2, d3])):
             r_encircle = -1/3*np.log(Sum_S - S4 + 1)
-            rewards[0:2] += mu3*r_encircle
+            rewards[0:3] += mu3*r_encircle
         # 3.4 stage-3 capture
         elif Sum_S == S4 and any(d > d_capture for d in [d1,d2,d3]):
             r_capture = np.exp((Sum_last_d - Sum_d)/(3*self.v_max))
-            rewards[0:2] += mu3*r_capture
+            rewards[0:3] += mu3*r_capture
         
         ## 4 finish rewards
         if Sum_S == S4 and all(d <= d_capture for d in [d1,d2,d3]):
-            rewards[0:2] += mu4*10
+            rewards[0:3] += mu4*10
             dones = [True] * self.num_agents
 
         return rewards,dones
@@ -246,6 +247,18 @@ class UAVEnv:
                 self.multi_current_vel[i] = np.zeros(2)
             self.multi_current_lasers.append(current_lasers)
             dones.append(done)
+           # 添加 UAV 与 UAV 的碰撞检测
+        for i in range(self.num_agents):
+            for j in range(i + 1, self.num_agents):
+                pos_i = self.multi_current_pos[i]
+                pos_j = self.multi_current_pos[j]
+                dist = np.linalg.norm(pos_i - pos_j)
+                if dist < self.min_uav_dist:
+                    dones[i] = True
+                    dones[j] = True
+                    self.multi_current_vel[i] = np.zeros(2)
+                    self.multi_current_vel[j] = np.zeros(2)
+
         return dones
 
     def render(self):

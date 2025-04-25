@@ -88,7 +88,7 @@ if __name__ == '__main__':
                 maddpg_agents.learn(memory,total_steps)
 
             obs = obs_
-            score += sum(rewards[0:2])
+            score += sum(rewards[0:3])
             score_target += rewards[-1]
             total_steps += 1
             episode_step += 1
