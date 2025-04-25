@@ -42,7 +42,8 @@ if __name__ == '__main__':
                         n_actions, n_agents, batch_size=256)
 
     PRINT_INTERVAL = 100
-    N_GAMES = 5000
+    N_GAMES = 2000
+    #origin 5000
     MAX_STEPS = 100
     total_steps = 0
     score_history = []
