@@ -164,7 +164,7 @@ class UAVEnv:
         rewards = np.zeros(self.num_agents)
         mu1 = 0.7 # r_near
         mu2 = 0.5 # r_safe
-        mu3 = 0.04 # r_multi_stage
+        mu3 = 0.02 # r_multi_stage
         mu4 = 5 # r_finish
         d_capture = 0.3
         d_limit = 0.75

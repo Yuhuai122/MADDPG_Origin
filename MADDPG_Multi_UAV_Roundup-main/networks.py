@@ -16,7 +16,7 @@ class CriticNetwork(nn.Module):
         self.q = nn.Linear(fc2_dims, 1)
 
         self.optimizer = optim.Adam(self.parameters(), lr=beta)
-        self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size=5000, gamma=0.33)
+        self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size=5000, gamma=0.7)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
  
         self.to(self.device)
@@ -48,7 +48,7 @@ class ActorNetwork(nn.Module):
         self.pi = nn.Linear(fc2_dims, n_actions)
 
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
-        self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size=1000, gamma=0.8)
+        self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size=1000, gamma=0.7)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
  
         self.to(self.device)
